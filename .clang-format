@@ -1,0 +1,88 @@
+---
+AlignAfterOpenBracket: AlwaysBreak
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCaseArrows: true
+  AlignCaseColons: true
+AlignOperands: AlignAfterOperator
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseExpressionOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakBeforeMultilineStrings: false
+BinPackArguments: true
+BinPackParameters: OnePerLine
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterStruct: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeElse: true
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+BreakAdjacentStringLiterals: true
+BreakAfterAttributes: Always
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+BreakBinaryOperations: RespectPrecedence
+BreakFunctionDefinitionParameters: false
+BreakStringLiterals: true
+ColumnLimit: 0
+ContinuationIndentWidth: 2
+IndentCaseBlocks: true
+IndentCaseLabels: true
+IndentPPDirectives: BeforeHash
+IndentWidth: 2
+IndentWrappedFunctionNames: true
+InsertNewlineAtEOF: true
+KeepEmptyLines:
+  AtEndOfFile: False
+  AtStartOfBlock: True
+  AtStartOfFile: false
+MaxEmptyLinesToKeep: 4
+PointerAlignment: Left
+RemoveEmptyLinesInUnwrappedLines: true
+SeparateDefinitionBlocks: Always
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: false
+  AfterFunctionDeclarationName: false
+  AfterFunctionDefinitionName: false
+  AfterIfMacros: false
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpacesBeforeTrailingComments: 2
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+SpacesInParens: Custom
+SpacesInParensOptions:
+  InConditionalStatements: false
+  InCStyleCasts: false
+  InEmptyParentheses: false
+  Other: false
+...
