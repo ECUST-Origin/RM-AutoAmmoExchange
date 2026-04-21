@@ -57,12 +57,30 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define KEY3_Pin GPIO_PIN_12
-#define KEY3_GPIO_Port GPIOB
+#define TYPE_SEL0_Pin GPIO_PIN_0
+#define TYPE_SEL0_GPIO_Port GPIOB
+#define TYPE_SEL1_Pin GPIO_PIN_1
+#define TYPE_SEL1_GPIO_Port GPIOB
+#define KEY1_Pin GPIO_PIN_12
+#define KEY1_GPIO_Port GPIOB
 #define KEY2_Pin GPIO_PIN_13
 #define KEY2_GPIO_Port GPIOB
-#define KEY1_Pin GPIO_PIN_14
-#define KEY1_GPIO_Port GPIOB
+#define KEY3_Pin GPIO_PIN_14
+#define KEY3_GPIO_Port GPIOB
+#define KEY9_Pin GPIO_PIN_15
+#define KEY9_GPIO_Port GPIOB
+#define KEY8_Pin GPIO_PIN_8
+#define KEY8_GPIO_Port GPIOA
+#define KEY7_Pin GPIO_PIN_9
+#define KEY7_GPIO_Port GPIOA
+#define KEY6_Pin GPIO_PIN_10
+#define KEY6_GPIO_Port GPIOA
+#define KEY5_Pin GPIO_PIN_11
+#define KEY5_GPIO_Port GPIOA
+#define KEY4_Pin GPIO_PIN_12
+#define KEY4_GPIO_Port GPIOA
+#define PMIC_WKUP_Pin GPIO_PIN_15
+#define PMIC_WKUP_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

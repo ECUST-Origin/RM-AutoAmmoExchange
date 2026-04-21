@@ -16,7 +16,7 @@ typedef struct{
   uint16_t MouseY;
   uint8_t MouseLeftDown;
   uint8_t MouseRightDown;
-  uint8_t DataArr[8];
+  uint8_t ByteArr[8];
 }AAE_ControllerData_t;
 
 void AAE_BuyAmmoBase_Hero();

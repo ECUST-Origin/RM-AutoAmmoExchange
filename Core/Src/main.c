@@ -39,6 +39,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define KEY_NUM 3
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,15 +54,15 @@
 
 enum RobotType_e{
   HERO = 0,
-  INFANTRY = 1
+  INFANTRY = 1,
+  ENGINEER = 2,
+  DRONE = 3,
 }RobotType;
-
-uint8_t TaskExecFlags = 0x00;
-uint8_t KeyScanMask = 0xFF;  // 按键扫描标志位 0表示不扫描该按键
 
 void Key1_DownCallback();
 void Key2_DownCallback();
 void Key3_DownCallback();
+
 Key_Handle_t Key1 = {
   .KeyGpioPort = KEY1_GPIO_Port,
   .KeyGpioPin = KEY1_Pin,
@@ -77,6 +79,10 @@ Key_Handle_t Key3 = {
   .KeyDownCallback = &Key3_DownCallback,
 };
 
+Key_Handle_t* KeyHandleArr[KEY_NUM] = {&Key1, &Key2, &Key3};
+volatile uint16_t KeyScanMask = 0xFFFF;  // 按键扫描标志位 0表示不扫描该按键
+volatile uint16_t TaskExecFlags = 0x0000;
+uint8_t IsRunningMacro = 0;
 
 /* USER CODE END PV */
 
@@ -96,39 +102,47 @@ void Key3_DownCallback(){
   __SET_BIT(TaskExecFlags, 2);
 }
 
+// 模拟短按电管按钮，阻止休眠
+// 低电平有效，周期5秒，100ms低 + 4900ms高
+void WakeupPMIC(){
+  static uint16_t cnt = 0;
+  cnt++;
+  if(cnt < 100){
+    HAL_GPIO_WritePin(PMIC_WKUP_GPIO_Port, PMIC_WKUP_Pin, 0);
+  }
+  else{
+    HAL_GPIO_WritePin(PMIC_WKUP_GPIO_Port, PMIC_WKUP_Pin, 1);
+  }
+  if(cnt >= 5000){
+    cnt = 0;
+  }
+}
+
+/* 毫秒中断按键响应逻辑
+ * 检测到某一按键按下时，将KeyScanMask的对应位置1，其它位为0，使程序不再响应其它按键
+ * 若识别为误触，或者对应的键盘宏执行完毕，将KeyScanMask全部置1，响应所有按键
+ * 若键盘宏执行过程中按键松开，通过IsRunningMacro标志阻止KeyScanMask全部置1，直到键盘宏执行完毕
+*/
 void HAL_IncTick(){
   uwTick += uwTickFreq;
 
-  if(__CHECK_BIT(KeyScanMask, 0)){
-    Key_Scan(&Key1);
-  }
-  if(Key1.KeyState != KEY_UP){
-    KeyScanMask = 0x01;
-  }
-  else{
-    KeyScanMask = 0xFF;
+  for(uint8_t i = 0; i < KEY_NUM; i++){
+    if(__CHECK_BIT(KeyScanMask, i)){
+      Key_Check(KeyHandleArr[i]);
+    }
+
+    if(!IsRunningMacro){
+      if(KeyHandleArr[i]->KeyState != KEY_UP){
+        KeyScanMask = 0x0000;
+        __SET_BIT(KeyScanMask, i);
+      }
+      else{
+        KeyScanMask = 0xFFFF;
+      }
+    }
   }
 
-  if(__CHECK_BIT(KeyScanMask, 1)){
-    Key_Scan(&Key2);
-  }
-  if(Key2.KeyState != KEY_UP){
-    KeyScanMask = 0x02;
-  }
-  else{
-    KeyScanMask = 0xFF;
-  }
-
-  if(__CHECK_BIT(KeyScanMask, 2)){
-    Key_Scan(&Key3);
-  }
-  if(Key3.KeyState != KEY_UP){
-    KeyScanMask = 0x04;
-  }
-  else{
-    KeyScanMask = 0xFF;
-  }
-
+  WakeupPMIC();
 }
 
 
@@ -173,17 +187,14 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_Delay(50);
-  Key_Init(&Key1);
-  Key_Init(&Key2);
-  Key_Init(&Key3);
+  HAL_GPIO_WritePin(PMIC_WKUP_GPIO_Port, PMIC_WKUP_Pin, 1);
 
-  //if(HAL_GPIO_ReadPin(TYPE_SEL_GPIO_Port, TYPE_SEL_Pin)){
-  //  RobotType = HERO;
-  //}
-  //else{
-  //  RobotType = INFANTRY;
-  //}
+  HAL_Delay(10);
+  for(uint8_t i = 0; i < KEY_NUM; i++){
+    Key_Init(KeyHandleArr[i]);
+  }
+
+  RobotType = (HAL_GPIO_ReadPin(TYPE_SEL1_GPIO_Port, TYPE_SEL1_Pin) << 1) | HAL_GPIO_ReadPin(TYPE_SEL0_GPIO_Port, TYPE_SEL0_Pin);
   
 
   /* USER CODE END 2 */
@@ -195,8 +206,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+    // KEY1 基地买弹
     if(__CHECK_BIT(TaskExecFlags, 0)){
       __CLEAR_BIT(TaskExecFlags, 0);
+      IsRunningMacro = 1;
       KeyScanMask = 0x00;
       if(RobotType == HERO){
         AAE_BuyAmmoBase_Hero();
@@ -205,10 +219,13 @@ int main(void)
         AAE_BuyAmmoBase_Infantry();
       }
       KeyScanMask = 0xFF;
+      IsRunningMacro = 0;
     }
 
+    // KEY2 远程买弹
     if(__CHECK_BIT(TaskExecFlags, 1)){
       __CLEAR_BIT(TaskExecFlags, 1);
+      IsRunningMacro = 1;
       KeyScanMask = 0x00;
       if(RobotType == HERO){
         AAE_BuyAmmoRemote_Hero();
@@ -217,13 +234,17 @@ int main(void)
         AAE_BuyAmmoRemote_Infantry();
       }
       KeyScanMask = 0xFF;
+      IsRunningMacro = 0;
     }
 
+    // KEY3 远程买血
     if(__CHECK_BIT(TaskExecFlags, 2)){
       __CLEAR_BIT(TaskExecFlags, 2);
+      IsRunningMacro = 1;
       KeyScanMask = 0x00;
       AAE_BuyHP();
       KeyScanMask = 0xFF;
+      IsRunningMacro = 0;
     }
   }
   /* USER CODE END 3 */

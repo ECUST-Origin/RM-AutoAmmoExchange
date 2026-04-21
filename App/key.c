@@ -2,18 +2,19 @@
 
 #define KEY_CONFIRM_TIME 10
 
-#define __READKEY(KeyGpioPort, KeyGpioPin) (!HAL_GPIO_ReadPin((KeyGpioPort), (KeyGpioPin)))
+// 读取按键。根据实际情况对返回值取反，确保按键按下时返回1
+#define __READKEY(KeyGpioPort, KeyGpioPin) (HAL_GPIO_ReadPin((KeyGpioPort), (KeyGpioPin)))
 
 void Key_Init(Key_Handle_t* hKey) {
   if(__READKEY(hKey->KeyGpioPort, hKey->KeyGpioPin)) {
-    hKey->KeyState = KEY_UP;
+    hKey->KeyState = KEY_DOWN;
   }
   else {
-    hKey->KeyState = KEY_DOWN;
+    hKey->KeyState = KEY_UP;
   }
 }
 
-void Key_Scan(Key_Handle_t* hKey) {
+void Key_Check(Key_Handle_t* hKey) {
   switch(hKey->KeyState) {
     case KEY_UP:
       if(__READKEY(hKey->KeyGpioPort, hKey->KeyGpioPin)) {
