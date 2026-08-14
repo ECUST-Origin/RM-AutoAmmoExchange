@@ -1,6 +1,6 @@
 
-#ifndef __BIT_TOOLS_H__
-#define __BIT_TOOLS_H__
+#ifndef __BIT_OPS_H__
+#define __BIT_OPS_H__
 
 
 #define __SET_BIT(x, n)       ((x) |= (1 << (n)))     // 将第n位置1
@@ -14,4 +14,4 @@
 #define __CHECK_MASK(x, mask)     ((x) & (mask) == (mask))    // 检查源数据对应位是否都为1
 
 
-#endif  /* __BIT_TOOLS_H__ */
+#endif  /* __BIT_OPS_H__ */

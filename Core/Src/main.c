@@ -27,7 +27,7 @@
 
 #include "aae.h"
 #include "key.h"
-#include "bit_tools.h"
+#include "bit_ops.h"
 
 /* USER CODE END Includes */
 
